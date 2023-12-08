@@ -50,4 +50,14 @@ For what regard the final fitness of the instance 10, you could try to implement
 
 ### R2:
 
-USER: 
+USER: Federico Buccellato s309075
+
+
+
+Hello,
+
+I have noticed that your solution faithfully follows the literature provided by the course. I find your code to be extremely well-organized and readable, and the comments significantly contribute to the understanding of the code. The evolutionary algorithm is structured effectively and appears correct. I particularly appreciated how you handle the possible termination in case of reaching the maximum fitness or constant fitness across generations.
+
+Overall, your work is of high quality. The only suggestion I can give is to experiment with some different algorithms to assess how fitness behaves in alternative contexts.
+
+Nevertheless, it is a job very well done!
