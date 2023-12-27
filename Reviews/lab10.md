@@ -14,3 +14,19 @@ To make the agent more robust, you could do training with different types of pla
 
 In conclusion your work seems well done, I only suggest you to improve a bit the organization of your code.
 Good work for the next projects!
+
+
+
+### R2
+
+USER: Lorenzo Calosso - s306041
+
+Hi Lorenzo here is my review for your work, I hope you will appreciate it.
+
+I really congratulate you as your code is really easy to read and understand due to the use of the classes you created.
+The implementation of Q-Learning seems to me to be correct from a theoretical and also implementation point of view.
+I don't have many comments to make to you as the code is well written and very similar to my implementation and also the results obtained seem promising.
+To further improve your work you could create a "player" class to be extended with different types of players, "random", "minmax", "RL-agent" or other types of players with other strategies, so as to randomly vary the opponent during training making the final agent more robust.
+It would also be interesting to see the learning process of your agent as the number of iterations of training changes, so you can figure out the right tradeoff between the number of training iterations and the number of wins.
+
+In conclusion, I again congratulate you on your work.
