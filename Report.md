@@ -1,7 +1,7 @@
 # Computational Intelligence 2022/2023 - Final Report
 
 
-The aim of this report is to create a log-file to explaining the work I did during the Computational Intelligence course.
+The aim of this report is to create a log-file to explain the work I did during the Computational Intelligence course.
 
 
 ## LAB 1 - A*
@@ -569,6 +569,8 @@ def state_info(state: Nim) -> dict:
     return info
 
 ```
+## Evolved Strategy
+- In the evolved strategy we introduce 5 different kind of strategies (i.e. way to choose an action in the game)
 
 ```python
 def evolved_strategy(genome) -> Callable:
