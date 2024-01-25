@@ -30,3 +30,37 @@ To further improve your work you could create a "player" class to be extended wi
 It would also be interesting to see the learning process of your agent as the number of iterations of training changes, so you can figure out the right tradeoff between the number of training iterations and the number of wins.
 
 In conclusion, I again congratulate you on your work.
+
+# Received Reviews
+
+### R1
+USER: Paul Raphael
+
+Hello,
+
+Your work is great and very well explained and displayed, the only thing lacking in my opinion is that you don't change the parameters alpha gamma and epsilon during training (maybe you did it on your own or I missed it) It could be interesting.
+Aside from that I couldn't find any issues good job and good luck for the exam !
+
+
+### R2
+
+USER: Angelo Iannielli
+
+Hello Nicolò,
+
+I've conducted a review of your code and wanted to share my observations.
+
+My 2 cents:
+Your code is well-structured and organized. I particularly appreciate the clear division into classes, managing both the game logic and player behaviors. This choice significantly enhances the readability and maintainability of the code.
+
+The option to test the trained player in a match against a human player is very interesting. This feature makes your code interactive, providing an immediate test of the achieved results during training.
+
+The integration of graphs at the end of the lab provides a comprehensive view of the learning process. This is a positive touch that offers a visual overview of the agent's performance throughout the training matches.
+
+Recommended Adjustments:
+The start_game() function might be considered redundant as it merely prints a static string. You may want to evaluate whether it's essential to keep this function.
+The print statements during training could be shortened to enhance file readability. Consider reducing the length of the prints while retaining essential information.
+Future Developments:
+It could be interesting to explore varying the epsilon variable as the algorithm learns to play. This might help reduce randomness in the agent's moves and reduce exploration during the learning process.
+Additionally, it would be compelling to train the agent against players using different strategies. This could provide insights into how well the agent adapts to diverse playing styles.
+Overall, you've done an excellent job. Keep it up and consider the suggestions to further enhance your code :)
