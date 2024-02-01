@@ -185,6 +185,11 @@ Result: "Solved in 412 steps (3 tiles)"
 
 The aim of this challenge is to obtain the best results on a set covering problem with differrent algorithm, minimizing the number of calls to the fitness function
 
+Two proposed solutions:
+
+- Simulated Annealing: it is just an attempt but not properly working
+- Tabu Search: results shown later
+
 ### Solution
 
 ```python
@@ -430,7 +435,7 @@ Results: (only for Tabu Search since it was the best)
 
 - _Collaborations_:  Worked with Angelo Iannielli - s317887
 
-- Peer Reviews:  Not requested for this Lab
+- Peer Reviews:  Not requested for the challenge
 
 
 ## LAB 2 - NIM with ES
@@ -570,7 +575,16 @@ def state_info(state: Nim) -> dict:
 
 ```
 ## Evolved Strategy
-- In the evolved strategy we introduce 5 different kind of strategies (i.e. way to choose an action in the game)
+In the evolved strategy we introduce 5 different kind of strategies (i.e. way to choose an action in the game)
+
+- "shortest": chooses the shortest row and removes a random number of objects from it.
+- "longest": chooses the longest row and removes a random number of objects from it.
+- "random": chooses a random row and removes a random number of objects from it.
+- "half_random": chooses a random row and removes half of the objects from it, rounded up.
+- "one_random": chooses a random row and removes only one object from it.
+
+An individual is a set of probabilities to choose one of the previous strategy.
+The algorithm selects the best individuals adapting the probabilities.
 
 ```python
 def evolved_strategy(genome) -> Callable:
@@ -607,6 +621,7 @@ def evolved_strategy(genome) -> Callable:
     return adaptive
 ```
 
+The fitness function is evaluated as the percentage of victories of the individual against a player that plays with the optimal strategy 
 
 ```python
 # In the fitness function we play Nim for NUM_MATCHES times where the player is:
@@ -1598,3 +1613,455 @@ Future Developments:
 It could be interesting to explore varying the epsilon variable as the algorithm learns to play. This might help reduce randomness in the agent's moves and reduce exploration during the learning process.
 Additionally, it would be compelling to train the agent against players using different strategies. This could provide insights into how well the agent adapts to diverse playing styles.
 Overall, you've done an excellent job. Keep it up and consider the suggestions to further enhance your code 
+
+
+# Quixo Project
+
+# ExtendedGame
+
+### Overview
+
+The ExtendedGame class extends the functionality of a basic game represented by the Game class. It introduces additional functions that do not change the logic of the game but are useful to implement a player such as MinMaxPlayer.
+
+### Class Overview
+
+ExtendedGame
+Methods:
+
+- **possible_moves(self, playerId: int) -> tuple[tuple[int, int], Move]:** Returns a tuple of possible moves for a given player in the current state of the game
+- **create_new_state(self, from_pos: tuple[int, int], slide: Move, player_id: int) -> "ExtendedGame":** Creates a new game state performing a move
+
+- **_switch_player()** switch the current player after a move
+
+# Players
+
+### Overview
+
+- RandomPlayer: A player that makes random moves.
+- HumanPlayer: A player that allows a human to interactively make moves.
+- MinMaxPlayer: An AI player using the Minimax algorithm with Alpha-Beta Pruning to make strategic moves.
+
+### Player Classes
+
+- RandomPlayer
+  This class represents a player that randomly selects moves on the game board. It is implemented with the make_move method, where it generates random positions and a random move direction.
+
+- HumanPlayer
+  This class represents a player that allows a human to interactively make moves. The make_move method prompts the user to input the position to move from and the direction to move.
+
+- MinMaxPlayer
+  This class represents an AI player using the Minimax algorithm with Alpha-Beta Pruning to make optimal moves. The make_move method implements the Minimax algorithm to evaluate possible moves and choose the best one. The evaluate method assigns scores to different game states, and the minmax method recursively explores possible moves while considering alpha-beta pruning for optimization.
+
+### MinMaxPlayer Configuration
+
+The MinMaxPlayer class takes three parameters during instantiation:
+
+- game: The game object (an instance of ExtendedGame) on which the player will make moves.
+- max_depth: The maximum depth to explore in the Minimax algorithm.
+
+The agent is proposed with a __max_depth = 10__ even if tests show that the agent as good results also with other lower even numbers.
+
+# Useful functions and Testing
+
+In order to test the performance of the game some useful functions are provided.
+
+- __test_agent(num_games)__ to simply test the Minmax player against a RandomPlayer 100 times
+
+- __test_agent_depths(num_games, max_depths)__ to test the MinMaxPlayer performance against a RandomPlayer, playing 100 times as first player (simbol 0) and 100 times as second player (simbol 1)
+
+- __plot_results(results, filename, title)__ to print some histograms about results obtained with the previous function.
+
+- __play_against_ai()__ to play a real time game against the MinMaxPlayer.
+
+
+```python
+
+class ExtendedGame(Game):
+    def __init__(self):
+        super().__init__()
+
+    def possible_moves(self, playerId: int) -> tuple[tuple[int, int], Move]:
+        """Return a tuple of possible moves for a given player in a given state of the game"""
+
+        # Define the edges of the game grid
+        perimeter = [0, 4]
+        # Initialize an empty list to store possible moves
+        possible_moves = []
+        # Get the current game board
+        board = self.get_board()
+
+        # Iterate over the edges of the game grid
+        for index in perimeter:
+            # Iterate over the columns of the game grid
+            for col in range(5):
+                # If the current cell belongs to the current player or is empty
+                if board[col][index] in {playerId, -1}:
+                    # If we are not on the first column, we can move up
+                    if col != 0:
+                        possible_moves.append(((index, col), Move.TOP))
+                    # If we are not on the last column, we can move down
+                    if col != 4:
+                        possible_moves.append(((index, col), Move.BOTTOM))
+                    # If we are not on the first row, we can move left
+                    if index != 0:
+                        possible_moves.append(((index, col), Move.LEFT))
+                    # If we are not on the last row, we can move right
+                    if index != 4:
+                        possible_moves.append(((index, col), Move.RIGHT))
+
+            # Iterate over the rows of the game grid
+            for row in range(5):
+                # If the current cell belongs to the current player or is empty
+                if board[index][row] in {playerId, -1}:
+                    # If we are not on the first column, we can move up
+                    if index != 0:
+                        possible_moves.append(((row, index), Move.TOP))
+                    # If we are not on the last column, we can move down
+                    if index != 4:
+                        possible_moves.append(((row, index), Move.BOTTOM))
+                    # If we are not on the first row, we can move left
+                    if row != 0:
+                        possible_moves.append(((row, index), Move.LEFT))
+                    # If we are not on the last row, we can move right
+                    if row != 4:
+                        possible_moves.append(((row, index), Move.RIGHT))
+
+        # Return the possible moves as a tuple
+        return tuple(possible_moves)
+
+    def create_new_state(
+        self, from_pos: tuple[int, int], slide: Move, player_id: int
+    ) -> "ExtendedGame":
+        """Return a new game state after applying a move"""
+
+        # Swap the position coordinates
+        from_pos = (from_pos[1], from_pos[0])
+        # Create a new instance of the ExtendedGame
+        new_game = ExtendedGame()
+        new_game.current_player_idx = player_id
+        # Copy the current game board to the new game
+        new_game._board = deepcopy(self._board)
+        new_game._take(from_pos, player_id)
+        new_game._slide(from_pos, slide)
+        new_game._switch_player()
+
+        # Return the new game state
+        return new_game
+
+    def _switch_player(self):
+        self.current_player_idx = 1 - self.current_player_idx
+```
+
+```python
+
+class RandomPlayer(Player):
+    def __init__(self) -> None:
+        super().__init__()
+        self.name = "RandomPlayer"
+
+    def make_move(self, game: "ExtendedGame") -> tuple[tuple[int, int], Move]:
+        from_pos = (random.randint(0, 4), random.randint(0, 4))
+        move = random.choice([Move.TOP, Move.BOTTOM, Move.LEFT, Move.RIGHT])
+        return from_pos, move
+
+
+class HumanPlayer(Player):
+    def __init__(self) -> None:
+        super().__init__()
+        self.name = "HumanPlayer"
+
+    def make_move(self, game: "ExtendedGame") -> tuple[tuple[int, int], Move]:
+        # Get the current player
+        player = game.get_current_player()
+
+        # Get the list of possible moves
+        possible_moves = game.possible_moves(player)
+
+        print("BOARD:")
+        game.print()
+
+        # Print the list of possible moves
+        print("Possible moves:")
+        for move in possible_moves:
+            print(f"From position {move[0]} move {move[1]}")
+
+        # Ask the user for their move
+        from_pos = tuple(
+            map(int, input("Enter the position to move from (row, col): ").split(","))
+        )
+        move = Move[
+            input("Enter the direction to move (TOP, BOTTOM, LEFT, RIGHT): ").upper()
+        ]
+        return from_pos, move
+
+
+class MinMaxPlayer(Player):
+    def __init__(self, game: "ExtendedGame", max_depth) -> None:
+        super().__init__()
+        self.name = "MinMaxPlayer"
+        self.game = game
+        self.max_depth = max_depth
+        self.infinity = float("inf")
+
+    def evaluate(self, game: "ExtendedGame") -> int:
+        player = (
+            1 - game.get_current_player()
+        )  # restore the player of the prevoius state since create_new_state() switch it.
+        score = 0
+        board = game.get_board()
+
+        # Check rows
+        for row in board:
+            score += self.evaluate_line(row, player)
+
+        # Check columns
+        for col in board.T:
+            score += self.evaluate_line(col, player)
+
+        # Check main diagonal
+        main_diag = np.diagonal(board)
+        score += self.evaluate_line(main_diag, player)
+
+        # Check secondary diagonal
+        secondary_diag = np.diagonal(np.fliplr(board))
+        score += self.evaluate_line(secondary_diag, player)
+
+        return score
+
+    @staticmethod
+    def evaluate_line(line: list[int], player_id: int) -> int:
+        line_score = 0
+
+        # Count occurrences of player's symbol and opponent's symbol
+        player_count = np.sum(line == player_id)
+        opponent_count = np.sum(line == 1 - player_id)
+
+        # Assign scores based on counts
+        if player_count > 0:
+            line_score += 10**player_count
+        if opponent_count > 0:
+            line_score -= 10**opponent_count
+
+        return line_score
+
+    def minmax(
+        self,
+        game: "ExtendedGame",
+        depth: int,
+        alpha: float,
+        beta: float,
+        isMaximizingPlayer: bool,
+    ) -> tuple[int, float, float]:
+        # Base case: if we have reached the maximum depth or the game is over,
+        # return the evaluation of the game state
+
+        if depth == 0 or game.check_winner() != -1:
+            return self.evaluate(game), alpha, beta
+
+        # Decrease the depth
+        depth -= 1
+
+        player = game.get_current_player()
+
+        # If we are the maximizing player
+        if isMaximizingPlayer:
+            # Initialize the maximum evaluation to negative infinity
+            bestVal = -self.infinity
+            # Iterate over all possible moves
+            for move in game.possible_moves(player):
+                # Create a new game state by making the move
+                new_state = game.create_new_state(move[0], move[1], player)
+                # Call minmax recursively on the new state
+                value, alpha, beta = self.minmax(new_state, depth, alpha, beta, False)
+                # Update the maximum evaluation
+                bestVal = max(bestVal, value)
+                # Update alpha
+                alpha = max(alpha, value)
+                # If beta is less than or equal to alpha, break the loop (alpha-beta pruning)
+                if alpha >= beta:
+                    break
+            # The result is the maximum evaluation, alpha and beta
+            result = bestVal, alpha, beta
+
+        # If we are the minimizing player
+        else:
+            # Initialize the minimum evaluation to positive infinity
+            bestVal = self.infinity
+            # Iterate over all possible moves
+            for move in game.possible_moves(player):
+                # Create a new game state by making the move
+                new_state = game.create_new_state(move[0], move[1], player)
+                # Call minmax recursively on the new state
+                value, alpha, beta = self.minmax(new_state, depth, alpha, beta, True)
+                # Update the minimum evaluation
+                bestVal = min(bestVal, value)
+                # Update beta
+                beta = min(beta, value)
+                # If beta is less than or equal to alpha, break the loop (alpha-beta pruning)
+                if alpha >= beta:
+                    break
+            # The result is the minimum evaluation, alpha and beta
+            result = bestVal, alpha, beta
+
+        return result
+
+    def make_move(self, game: "ExtendedGame") -> tuple[tuple[int, int], Move]:
+        # Initialize the best move to None and the best evaluation to negative infinity
+        bestMove = None
+        bestVal = -self.infinity
+
+        # Get the current player, it will be the index of the MinmaxPlayer
+        player = self.game.get_current_player()
+
+        # Get the list of possible moves for MinmaxPlayer
+        possible_moves = list(game.possible_moves(player))
+
+        # Iterate over all possible moves
+        for move in possible_moves:
+            # Create a new game state by making the move
+            new_state = self.game.create_new_state(move[0], move[1], False)
+
+            # Early return if a move is a winning move for MinmaxPlayer
+            if new_state.check_winner() == player:
+                bestMove = move
+                break
+
+            # Call the Minimax function on the new state to get the evaluation of the state
+            value = self.minmax(
+                new_state, self.max_depth, -self.infinity, self.infinity, False
+            )[0]
+
+            # If the evaluation of the state is greater than the best evaluation, update the best evaluation and the best move
+            if value > bestVal:
+                bestVal = value
+                bestMove = move
+
+        return bestMove
+
+```
+
+```python
+
+
+def test_agent(num_games: int) -> None:
+    count_0 = 0
+    count_1 = 0
+
+    for _ in range(num_games):
+        game = ExtendedGame()
+        player1 = MinMaxPlayer(game, 10)
+        player2 = RandomPlayer()
+
+        winner = game.play(player1, player2)
+
+        if winner == 0:
+            count_0 += 1
+        else:
+            count_1 += 1
+        print(f"{player1.name} win {count_0} matches")
+        print(f"{player2.name} win {count_1} matches")
+
+
+def test_agent_depths(num_games: int, max_depths: list[int]) -> None:
+    results_when_first = []
+    results_when_second = []
+
+    for max_depth in tqdm(max_depths, desc="Testing depths"):
+        wins_when_first = 0
+        losses_when_first = 0
+        wins_when_second = 0
+        losses_when_second = 0
+
+        for _ in tqdm(range(num_games), desc="Testing games"):
+            # MinMaxPlayer starts first
+            game = ExtendedGame()
+            player1 = MinMaxPlayer(game, max_depth)
+            player2 = RandomPlayer()
+            winner = game.play(player1, player2)
+
+            if winner == 0:
+                wins_when_first += 1
+            else:
+                losses_when_first += 1
+
+            # MinMaxPlayer starts second
+            game = ExtendedGame()
+            player1 = RandomPlayer()
+            player2 = MinMaxPlayer(game, max_depth)
+            winner = game.play(player1, player2)
+
+            if winner == 1:
+                wins_when_second += 1
+            else:
+                losses_when_second += 1
+
+        results_when_first.append((max_depth, wins_when_first, losses_when_first))
+        results_when_second.append((max_depth, wins_when_second, losses_when_second))
+
+    return results_when_first, results_when_second
+
+
+def plot_results(
+    results: list[tuple[int, int, int]], filename: str, title: str
+) -> None:
+    depths, wins_0, wins_1 = zip(*results)
+    width = 0.35  # the width of the bars
+
+    fig, ax = plt.subplots()
+
+    ax.bar(
+        [d - width / 2 for d in depths],
+        wins_0,
+        width,
+        label="MinMax Player",
+        edgecolor="black",
+    )
+    ax.bar(
+        [d + width / 2 for d in depths],
+        wins_1,
+        width,
+        label="Random Player",
+        edgecolor="black",
+    )
+
+    ax.set_title(title)
+    ax.set_xlabel("Max Depth")
+    ax.set_ylabel("Number of Wins")
+    ax.set_xticks(depths)
+    ax.yaxis.set_major_locator(
+        MaxNLocator(integer=True)
+    )  # Set y-axis to display only integers
+    ax.legend()
+
+    plt.savefig(filename)
+
+    plt.show()
+
+
+def play_against_ai() -> None:
+    game = ExtendedGame()
+    player1 = MinMaxPlayer(game, 10)
+    player2 = HumanPlayer()
+
+    winner = game.play(player1, player2)
+
+    if winner == 0:
+        print(f"{player1.name} wins!")
+    else:
+        print(f"{player2.name} wins!")
+
+
+if __name__ == "__main__":
+    
+    
+    test_agent(100)
+    
+    # results_first, results_second = test_agent_depths(
+    #     100, [10]
+    # )
+    # plot_results(results_first, "results_first.png", "MinMax Player starts first")
+    # plot_results(results_second, "results_second.png", "MinMax Player starts second")
+    
+    # play_against_ai()
+
+```
