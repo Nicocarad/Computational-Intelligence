@@ -1,4 +1,4 @@
-# Computational Intelligence 2022/2023 - Final Report
+# Computational Intelligence 2023/2024 - Final Report
 
 
 The aim of this report is to create a log-file to explain the work I did during the Computational Intelligence course.
