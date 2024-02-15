@@ -46,7 +46,7 @@ class HumanPlayer(Player):
 
 
 class MinMaxPlayer(Player):
-    def __init__(self, game: "ExtendedGame", max_depth) -> None:
+    def __init__(self, game: "ExtendedGame", max_depth=10) -> None:
         super().__init__()
         self.name = "MinMaxPlayer"
         self.game = game

@@ -12,7 +12,7 @@ def test_agent(num_games: int) -> None:
 
     for _ in range(num_games):
         game = ExtendedGame()
-        player1 = MinMaxPlayer(game, 10)
+        player1 = MinMaxPlayer(game)
         player2 = RandomPlayer()
 
         winner = game.play(player1, player2)
@@ -103,7 +103,7 @@ def plot_results(
 
 def play_against_ai() -> None:
     game = ExtendedGame()
-    player1 = MinMaxPlayer(game, 10)
+    player1 = MinMaxPlayer(game)
     player2 = HumanPlayer()
 
     winner = game.play(player1, player2)
